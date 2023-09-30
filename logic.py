@@ -1,32 +1,58 @@
 import datetime as dt
-from dateutil import parser
-from models import *
-import sqlalchemy as db
+from app import db
+from datetime import datetime
+from models.bankAccount import BankAccount
+from models.bankAccountType import BankAccountType
+from models.movement import Movement
+from models.movementType import MovementType
+from models.customer import Customer
 
-class App():
+class Logic():
     def __init__(self):
         super().__init__()
         
-        self.config_session()
+        self.session = db.session
+    
+    def init(self):        
+        db.create_all()
+        
+        movementType = db.session.query(MovementType).all()
+        bankAccountTypes = db.session.query(BankAccountType).all()
+        
+        if(len(movementType) == 0 and len(bankAccountTypes) == 0):
+            self.add_initial_values()
+        
+        db.session.commit()
+    
+    def add_initial_values(self):
+        movementTypes = [ MovementType(type='deposit'), MovementType(type='withdraw'), MovementType(type='fee')]
+        bankAccountTypes = [ BankAccountType(type='current'), BankAccountType(type='savings'), BankAccountType(type='investiment')]
+        db.session.add_all(movementTypes)
+        db.session.add_all(bankAccountTypes)
     
     def create_user(self, name, document, gender, birthday):
         customer = self.get_customer_by_document(document)
         if(customer):
             raise Exception("Duplicated_Document")
         
-        newCustomer = Customer(name=name, document=document, gender=gender, birthday=birthday)
+        newCustomer = Customer(name=name, document=document, gender=gender, birthDay=datetime.strptime(birthday, '%Y-%m-%d'))
         self.session.add(newCustomer)
         self.session.commit()
         
-    def open_account(self, document, accountType):
+        return newCustomer
+        
+    def open_account(self, document, accountType, initialBalance):
         customer = self.get_customer_by_document_or_error(document)
+        
+        if(customer.bankAccount):
+            raise Exception("BankAccount_Already_Exists")
         
         bankAccountType = self.session.query(BankAccountType).where(BankAccountType.type == accountType).first()        
         
         if(bankAccountType is None):
             raise Exception("BankAccountType_NotFound")
         
-        bankAccount = BankAccount(initial_balance=0, customer=customer, bankAccountType=bankAccountType)
+        bankAccount = BankAccount(initial_balance=initialBalance, balance=initialBalance, bank_account_type=bankAccountType, customer=customer)
         self.add_and_save(bankAccount)
         
     def deposit(self, document, value):
@@ -34,6 +60,7 @@ class App():
         bankAccount.balance += value        
         movement = self.add_movement(bankAccount, value, "deposit")        
         self.add_and_save(movement)
+        return bankAccount
             
     def withdraw(self, document, value):
         bankAccount = self.get_bankaccount_by_document_or_error(document)
@@ -63,7 +90,7 @@ class App():
             
     def add_movement(self, bankAccount, value, type):
         movementType = self.session.query(MovementType).where(MovementType.type == type).first()
-        return Movement(date=dt.datetime.now(), value=value, movementType=movementType, bankAccount=bankAccount)
+        return Movement(date=dt.datetime.now(), value=value, movement_type=movementType, bank_account=bankAccount)
     
     def add_and_save(self, data):
         self.session.add(data)
@@ -88,11 +115,4 @@ class App():
     
     def get_customer_by_document(self, document):
         return self.session.query(Customer).where(Customer.document == document).first()
-    
-    def config_session(self):
-        engine = self.get_engine()
-        Session = orm.sessionmaker(bind=engine)
-        self.session = Session()
         
-    def get_engine():
-        return db.create_engine('sqlite:///orm.db')

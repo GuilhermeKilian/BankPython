@@ -8,24 +8,29 @@
     </head>
     <body>
         <div class="container mt-4">
+            <a href="/">Voltar</a>
             <h3>Criar conta</h3>
             <div class="mt-4">
                 <form action="" method="post">
                     <div class="mb-3">
                         <label for="document" class="form-label">Documento</label>
-                        <input type="text" class="form-control" id="document" placeholder="000.000.000-00">
+                        <input type="text" class="form-control" name="document" id="document" placeholder="000.000.000-00">
                     </div>
                     <div class="my-1 form-check">
-                        <input class="form-check-input" type="radio" name="bankAccountType" id="current">
+                        <input class="form-check-input" type="radio" name="bankAccountType" value="current" id="current">
                         <label class="form-check-label" for="current">Corrente</label>
                     </div>
                     <div class="my-1 form-check">
-                        <input class="form-check-input" type="radio" name="bankAccountType" id="savings" checked>
+                        <input class="form-check-input" type="radio" name="bankAccountType" value="savings" id="savings" checked>
                         <label class="form-check-label" for="savings">Poupança</label>
                     </div>
                     <div class="my-1 form-check">
-                        <input class="form-check-input" type="radio" name="bankAccountType" id="investiment" checked>
+                        <input class="form-check-input" type="radio" name="bankAccountType" value="investiment" id="investiment" checked>
                         <label class="form-check-label" for="investiment">Investimento</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="initial_balance" class="form-label">Saldo inicial</label>
+                        <input type="number" class="form-control" name="initial_balance" id="initial_balance" min=0 placeholder="0">
                     </div>
                     <button type="submit" class="btn btn-primary">Criar</button>
                 </form>

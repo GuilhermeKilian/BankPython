@@ -10,14 +10,16 @@
         <div class="container mt-4">
             <h3>Aplicar juros</h3>
         </div>
-        <div class="my-3">
-            <label for="document" class="form-label">Informe o seu documento</label>
-            <input type="text" class="form-control" id="document" placeholder="000.000.000-00">
-        </div>
-        <div class="my-3">
-            <label for="deposit" class="form-label">Qual a taxa que você deseja aplicar?</label>
-            <input type="number" class="form-control" id="deposit" min="1" placeholder="0">
-        </div>
-        <button class="btn btn-primary">Aplicar</button>
+        <form action="" method="post">
+            <div class="my-3">
+                <label for="document" class="form-label">Informe o seu documento</label>
+                <input type="text" class="form-control" id="document" placeholder="000.000.000-00">
+            </div>
+            <div class="my-3">
+                <label for="deposit" class="form-label">Qual a taxa que você deseja aplicar?</label>
+                <input type="number" class="form-control" id="deposit" min="1" placeholder="0">
+            </div>
+            <button type="submit" class="btn btn-primary">Aplicar</button>
+        </form>
     </body>
 </html>
