@@ -74,6 +74,8 @@ class Logic():
         bankAccount.balance -= value        
         movement = self.add_movement(bankAccount=bankAccount, value=value, type="withdraw")
         self.add_and_save(movement)
+        
+        return bankAccount
             
     def apply_fee(self, document, value):
         bankAccount = self.get_bankaccount_by_document_or_error(document)
@@ -84,6 +86,11 @@ class Logic():
         bankAccount.balance += bankAccount.balance * value
         movement = self.add_movement(bankAccount=bankAccount, value=value, type="fee")
         self.add_and_save(movement)
+        
+        return bankAccount
+            
+    def get_bank_statement(self, document, start, end):
+        return  self.session.query(Movement).join(BankAccount).join(Customer).where(Customer.document == document).where(Movement.date > start and Movement.date < end).all()       
             
     def get_bankAccount_movement_by_document(self, document):
         return self.session.query(Movement).join(BankAccount).join(Customer).where(Customer.document == document).all()

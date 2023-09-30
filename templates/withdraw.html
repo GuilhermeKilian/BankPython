@@ -17,7 +17,7 @@
             <div id="success-div" class="alert alert-info" style="display:none">
                 Olá <span id="name">0</span>, seu saldo atual é de: <span id="balance">0</span>
             </div>
-            <form>
+            <form method="post">
                 <div class="my-3">
                     <label for="document" class="form-label">Informe o seu documento</label>
                     <input type="text" class="form-control" name="document" id="document" placeholder="000.000.000-00">
@@ -26,7 +26,7 @@
                     <label for="withdraw" class="form-label">Quanto você deseja sacar?</label>
                     <input type="number" class="form-control" name="value" id="withdraw" min="1" placeholder="0">
                 </div>
-                <button id="btn-submit" class="btn btn-primary">Sacar</button>
+                <button id="btn-submit" class="btn btn-primary" disabled=disabled>Sacar</button>
             </form>
         </div>
     </body>

@@ -41,9 +41,23 @@ def account_post():
 def bankinterest():
     return render_template('bankinterest.html')
 
+@app.route('/bankinterest', methods=['POST'])
+def bankinterest_post():
+    document = request.form['document']
+    value = float(request.form['value'])
+    bankAccount = logic.apply_fee(document, value)
+    return render_template('bankstatement.html', bankAccount=bankAccount)
+
 @app.route('/withdraw', methods=['GET'])
 def withdraw():
     return render_template('withdraw.html')
+
+@app.route('/withdraw', methods=['POST'])
+def withdraw_post():
+    document = request.form['document']
+    value = float(request.form['value'])
+    bankAccount = logic.withdraw(document, value)
+    return render_template('withdraw.html', bankAccount=bankAccount)
 
 @app.route('/deposit', methods=['GET'])
 def deposit():
@@ -59,6 +73,17 @@ def deposit_post():
 @app.route('/bankstatement', methods=['GET'])
 def bankstatement():
     return render_template('bankstatement.html')
+
+@app.route('/bankstatement/<document>')
+def getBankStatement(document):
+    document = request.args.get(key='document')
+    start = request.args.get(key='start')
+    end = request.args.get(key='end')
+    movements = logic.get_bank_statement(document, start, end)
+    return render_template('bankstatement.html', movements=map(to_movement_model, movements))
+
+def to_movement_model(movement):
+    return { 'date': movement.date, 'type': movement.movement_type.type, 'value': movement.value}
 
 @app.route('/bankAccount/<document>', methods=['GET'])
 def getBankAccountByDocument(document):

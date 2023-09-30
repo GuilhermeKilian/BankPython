@@ -8,7 +8,23 @@
     </head>
     <body>
         <div class="container mt-4">
+        <a href="/">Voltar</a>
         <h3>Extrato</h3>
+        <form method="get">
+            <div class="my-3">
+                <label for="document" class="form-label">Informe o seu documento</label>
+                <input type="text" class="form-control" name="document" id="document" placeholder="000.000.000-00">
+            </div>
+            <div class="my-3">
+                <label for="formDate" class="form-label">De</label>
+                <input class="form-control" type="date" name="end" id="formDate"/>
+            </div>
+            <div class="my-3">
+                <label for="formDate" class="form-label">Até</label>
+                <input class="form-control" type="date" name="start" id="formDate"/>
+            </div>
+            <button id="btn-submit" type="submit" class="btn btn-primary" disabled=disabled>Pesquisar</button>
+        </form>
         <div class="d-flex justify-content-center">
             <div class="card" style="width: 100%;">
                 <div class="card-header">
@@ -17,7 +33,8 @@
                     <h6 id="bankaccount-type"></h6>
                     <h6 id="bankaccount-value"></h6>
                 </div>
-                <div class="card-body">                
+                <div class="card-body">   
+                    {% if movements %}             
                     <table class="table">
                         <thead>
                             <tr>
@@ -26,11 +43,21 @@
                                 <th scope="col">Valor</th>
                             </tr>
                         </thead>
-                        <tbody id="movement-content"></tbody>
+                        <tbody id="movement-content">
+                            {%for i in movements%}  
+                            <tr>
+                                <td>{{i.date}}</td>
+                                <td>{{i.value}}</td>
+                                <td>{{i.type}}</td>
+                            </tr>
+                                <li>{{Pokemons[i]}}</li>
+                            {%endfor%}                            
+                        </tbody>
                     </table>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
-                    <div >
+                    <div>
                         <p>Depositos: <span id="total-deposits"></span></p>
                         <p>Saques: <span id="total-withdraws"></span></p>
                         <p>Op. Juros: <span id="total-investments"></span></p>                        
