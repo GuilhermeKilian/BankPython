@@ -1,6 +1,7 @@
 from app import app
 from flask import render_template, request, make_response
 from logic import *
+from model.movementModel import MovementModel
 import json
 
 logic = Logic()
@@ -34,8 +35,8 @@ def account_post():
     document = request.form['document']
     accountType = request.form['bankAccountType']
     initialBalance = float(request.form['initial_balance'])
-    logic.open_account(document, accountType, initialBalance)
-    return render_template('account.html')
+    bankAccount = logic.open_account(document, accountType, initialBalance)
+    return render_template('account.html', bankAccount=bankAccount)
 
 @app.route('/bankinterest', methods=['GET'])
 def bankinterest():
@@ -43,10 +44,17 @@ def bankinterest():
 
 @app.route('/bankinterest', methods=['POST'])
 def bankinterest_post():
-    document = request.form['document']
-    value = float(request.form['value'])
-    bankAccount = logic.apply_fee(document, value)
-    return render_template('bankstatement.html', bankAccount=bankAccount)
+    try:        
+        document = request.form['document']
+        value = float(request.form['value'])
+        bankAccount = logic.apply_fee(document, value)
+        return render_template('bankinterest.html', bankAccount=bankAccount)
+    except Exception as ex:
+        errorMessage = 'Erro interno.'
+        if str(ex) == 'Invalid_Account':
+            errorMessage = 'Conta inválida'
+        
+        return render_template('bankinterest.html', error=errorMessage)
 
 @app.route('/withdraw', methods=['GET'])
 def withdraw():
@@ -72,18 +80,22 @@ def deposit_post():
 
 @app.route('/bankstatement', methods=['GET'])
 def bankstatement():
-    return render_template('bankstatement.html')
-
-@app.route('/bankstatement/<document>')
-def getBankStatement(document):
     document = request.args.get(key='document')
     start = request.args.get(key='start')
     end = request.args.get(key='end')
-    movements = logic.get_bank_statement(document, start, end)
-    return render_template('bankstatement.html', movements=map(to_movement_model, movements))
+    
+    if(document and start and end):
+        movements = logic.get_bank_statement(document, start, end)
+        movementsModel = list(map(to_movement_model, movements))
+        totalDeposits = sum(item.value for item in movementsModel if item.type == 'deposit')
+        totalWithdraw = sum(item.value for item in movementsModel if item.type == 'withdraw')
+        totalFee = sum(item.value for item in movementsModel if item.type == 'fee')
+        return render_template('bankstatement.html', document=document, start=start, end=end, deposits=totalDeposits, withdraws=totalWithdraw, fees=totalFee, movements=movementsModel)
+    
+    return render_template('bankstatement.html')
 
 def to_movement_model(movement):
-    return { 'date': movement.date, 'type': movement.movement_type.type, 'value': movement.value}
+    return MovementModel(movement.date, movement.value, movement.movement_type.type)
 
 @app.route('/bankAccount/<document>', methods=['GET'])
 def getBankAccountByDocument(document):

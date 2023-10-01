@@ -11,6 +11,11 @@
         <div class="container mt-4">
             <a href="/">Voltar</a>
             <h3>Sacar</h3>
+            {% if bankAccount %}
+                <div class="alert alert-success">
+                    Saque realizado com sucesso!
+                </div>
+            {% endif %}
             <div id="error-div" class="alert alert-danger" style="display:none">
                 Erro ao buscar conta bancária
             </div>

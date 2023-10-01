@@ -1,11 +1,11 @@
 import datetime as dt
 from app import db
 from datetime import datetime
-from models.bankAccount import BankAccount
-from models.bankAccountType import BankAccountType
-from models.movement import Movement
-from models.movementType import MovementType
-from models.customer import Customer
+from domain.bankAccount import BankAccount
+from domain.bankAccountType import BankAccountType
+from domain.movement import Movement
+from domain.movementType import MovementType
+from domain.customer import Customer
 
 class Logic():
     def __init__(self):
@@ -49,11 +49,13 @@ class Logic():
         
         bankAccountType = self.session.query(BankAccountType).where(BankAccountType.type == accountType).first()        
         
-        if(bankAccountType is None):
+        if(bankAccountType == None):
             raise Exception("BankAccountType_NotFound")
         
         bankAccount = BankAccount(initial_balance=initialBalance, balance=initialBalance, bank_account_type=bankAccountType, customer=customer)
         self.add_and_save(bankAccount)
+        
+        return bankAccount
         
     def deposit(self, document, value):
         bankAccount = self.get_bankaccount_by_document_or_error(document)        
@@ -68,7 +70,7 @@ class Logic():
         if(bankAccount.balance < value):
             raise Exception('Insuficient_Balance')
         
-        if(bankAccount.bank_account_type.type is "investimento"):
+        if(bankAccount.bank_account_type.type == "investimento"):
             raise Exception('Invalid_Account')
         
         bankAccount.balance -= value        
@@ -80,17 +82,17 @@ class Logic():
     def apply_fee(self, document, value):
         bankAccount = self.get_bankaccount_by_document_or_error(document)
         
-        if(bankAccount.bank_account_type.type is "corrente"):
+        if(bankAccount.bank_account_type.type == "current"):
             raise Exception("Invalid_Account")
         
-        bankAccount.balance += bankAccount.balance * value
+        bankAccount.balance += bankAccount.balance * (value / 100)
         movement = self.add_movement(bankAccount=bankAccount, value=value, type="fee")
         self.add_and_save(movement)
         
         return bankAccount
             
     def get_bank_statement(self, document, start, end):
-        return  self.session.query(Movement).join(BankAccount).join(Customer).where(Customer.document == document).where(Movement.date > start and Movement.date < end).all()       
+        return  self.session.query(Movement).join(BankAccount).join(Customer).where(Customer.document == document).where(Movement.date > start).where(Movement.date < end).all()     
             
     def get_bankAccount_movement_by_document(self, document):
         return self.session.query(Movement).join(BankAccount).join(Customer).where(Customer.document == document).all()

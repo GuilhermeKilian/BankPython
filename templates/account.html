@@ -11,6 +11,11 @@
             <a href="/">Voltar</a>
             <h3>Criar conta</h3>
             <div class="mt-4">
+                {% if bankAccount %}
+                <div class="alert alert-success">
+                    Conta bancária criado com sucesso!
+                </div>
+                {% endif %}
                 <form action="" method="post">
                     <div class="mb-3">
                         <label for="document" class="form-label">Documento</label>

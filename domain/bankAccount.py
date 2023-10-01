@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Float, ForeignKey
 from app import db
 import sqlalchemy.orm as orm
-from models.bankAccountType import BankAccountType
-from models.customer import Customer
+from domain.bankAccountType import BankAccountType
+from domain.customer import Customer
 
 class BankAccount(db.Model):
     __tablename__ = 'bankAccount'

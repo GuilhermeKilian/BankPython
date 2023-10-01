@@ -10,7 +10,17 @@
     <body>
         <div class="container mt-4">
             <a href="/">Voltar</a>
-            <h3>Aplicar juros</h3>        
+            <h3>Aplicar juros</h3>
+            {% if bankAccount %}
+                <div class="alert alert-success">
+                    Juros aplicado com sucesso!
+                </div>
+            {% endif %}
+            {% if error %}
+                <div id="internal-error" class="alert alert-danger">
+                    {{error}}
+                </div>
+            {% endif%}
             <div id="error-div" class="alert alert-danger" style="display:none">
                 Erro ao buscar conta bancária
             </div>

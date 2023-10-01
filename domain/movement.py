@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Float, Date,ForeignKey
 from app import db
 import sqlalchemy.orm as orm
-from models.bankAccount import BankAccount
-from models.movementType import MovementType
+from domain.bankAccount import BankAccount
+from domain.movementType import MovementType
 
 class Movement(db.Model):
     __tablename__ = 'movement'
