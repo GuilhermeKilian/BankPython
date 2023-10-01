@@ -5,6 +5,7 @@ const DocumentModel = {
   successDiv: '#success-div',
   errorDiv: '#error-div',
   internalErrorDiv: '#internal-error',
+  internalSuccessDiv: '#internal-success',
   btnSubmit: '#btn-submit',
 
   initializeListeners(){
@@ -26,12 +27,14 @@ const DocumentModel = {
     $(DocumentModel.errorDiv).hide()
     $(DocumentModel.btnSubmit).attr('disabled', null)
     $(DocumentModel.internalErrorDiv).hide()
+    $(DocumentModel.internalSuccessDiv).hide()
   },
   showError(){
     $(DocumentModel.errorDiv).show()
     $(DocumentModel.successDiv).hide()
     $(DocumentModel.btnSubmit).attr('disabled', true)
     $(DocumentModel.internalErrorDiv).hide()
+    $(DocumentModel.internalSuccessDiv).hide()
   },
 }
 

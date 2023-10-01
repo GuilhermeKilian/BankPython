@@ -58,6 +58,10 @@ class Logic():
         return bankAccount
         
     def deposit(self, document, value):
+        
+        if(value < 0):
+            raise Exception("Negative_Value")
+        
         bankAccount = self.get_bankaccount_by_document_or_error(document)        
         bankAccount.balance += value        
         movement = self.add_movement(bankAccount, value, "deposit")        
@@ -67,10 +71,13 @@ class Logic():
     def withdraw(self, document, value):
         bankAccount = self.get_bankaccount_by_document_or_error(document)
         
+        if(value < 0):
+            raise Exception("Negative_Value")
+        
         if(bankAccount.balance < value):
             raise Exception('Insuficient_Balance')
         
-        if(bankAccount.bank_account_type.type == "investimento"):
+        if(bankAccount.bank_account_type.type == "investiment"):
             raise Exception('Invalid_Account')
         
         bankAccount.balance -= value        
@@ -80,6 +87,10 @@ class Logic():
         return bankAccount
             
     def apply_fee(self, document, value):
+        
+        if(value < 0):
+            raise Exception("Negative_Value")
+        
         bankAccount = self.get_bankaccount_by_document_or_error(document)
         
         if(bankAccount.bank_account_type.type == "current"):

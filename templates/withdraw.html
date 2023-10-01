@@ -11,9 +11,14 @@
         <div class="container mt-4">
             <a href="/">Voltar</a>
             <h3>Sacar</h3>
+            {% if error %}
+                <div id="internal-error" class="alert alert-danger">
+                    {{error}}
+                </div>
+            {% endif %}
             {% if bankAccount %}
-                <div class="alert alert-success">
-                    Saque realizado com sucesso!
+                <div id="internal-success" class="alert alert-success">
+                    Saque realizado com sucesso! Valor atual: {{bankAccount.balance}}
                 </div>
             {% endif %}
             <div id="error-div" class="alert alert-danger" style="display:none">

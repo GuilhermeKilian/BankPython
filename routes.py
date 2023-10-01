@@ -23,8 +23,14 @@ def customer_post():
     document = request.form['document']
     gender = request.form['gender']
     birthday = request.form['birthday']
-    newCustomer = logic.create_user(name, document, gender, birthday)
-    return render_template('customer.html', newCustomer=newCustomer)
+    try:        
+        newCustomer = logic.create_user(name, document, gender, birthday)
+        return render_template('customer.html', newCustomer=newCustomer)
+    except Exception as ex:
+        errorMessage = 'Erro interno.'
+        if str(ex) == 'Duplicated_Document':
+            errorMessage = 'Já existe um usuário com esta conta.'
+        return render_template('customer.html', error=errorMessage)
 
 @app.route('/account', methods=['GET'])
 def account():
@@ -35,24 +41,39 @@ def account_post():
     document = request.form['document']
     accountType = request.form['bankAccountType']
     initialBalance = float(request.form['initial_balance'])
-    bankAccount = logic.open_account(document, accountType, initialBalance)
-    return render_template('account.html', bankAccount=bankAccount)
+    
+    try:
+        bankAccount = logic.open_account(document, accountType, initialBalance)
+        return render_template('account.html', bankAccount=bankAccount)
+    except Exception as ex:
+        errorMessage = 'Erro interno.'
+        if str(ex) == 'BankAccount_Already_Exists':
+            errorMessage = 'Este usuário já possui uma conta bancária.'
+        if(str(ex) == 'BankAccountType_NotFound'):
+            errorMessage = 'Categoria da conta bancária não encontrada.'
+                    
+        return render_template('account.html', error=errorMessage)
 
 @app.route('/bankinterest', methods=['GET'])
 def bankinterest():
     return render_template('bankinterest.html')
 
 @app.route('/bankinterest', methods=['POST'])
-def bankinterest_post():
-    try:        
-        document = request.form['document']
-        value = float(request.form['value'])
+def bankinterest_post():    
+    document = request.form['document']
+    value = float(request.form['value'])
+    
+    try:
         bankAccount = logic.apply_fee(document, value)
         return render_template('bankinterest.html', bankAccount=bankAccount)
     except Exception as ex:
         errorMessage = 'Erro interno.'
         if str(ex) == 'Invalid_Account':
             errorMessage = 'Conta inválida'
+        if str(ex) == 'BankAccount_NotFound':
+            errorMessage = 'Conta bancária não encontrada.'
+        if(str(ex) == 'Negative_Value'):
+            errorMessage = 'Valor do juros precisa ser maior que zero.'
         
         return render_template('bankinterest.html', error=errorMessage)
 
@@ -64,8 +85,20 @@ def withdraw():
 def withdraw_post():
     document = request.form['document']
     value = float(request.form['value'])
-    bankAccount = logic.withdraw(document, value)
-    return render_template('withdraw.html', bankAccount=bankAccount)
+    try:
+        bankAccount = logic.withdraw(document, value)
+        return render_template('withdraw.html', bankAccount=bankAccount)
+    except Exception as ex:
+        errorMessage = 'Erro interno.'
+        if str(ex) == 'BankAccount_NotFound':
+            errorMessage = 'Conta bancária não encontrada.'
+        if str(ex) == 'Invalid_Account':
+            errorMessage = 'Esta conta não pode realizar saques.'
+        if(str(ex) == 'Insuficient_Balance'):
+            errorMessage = 'Saldo insuficiente para realizar o saque.'  
+        if(str(ex) == 'Negative_Value'):
+            errorMessage = 'Valor do saque precisa ser maior que zero.'
+        return render_template('withdraw.html', error=errorMessage)
 
 @app.route('/deposit', methods=['GET'])
 def deposit():
@@ -75,8 +108,16 @@ def deposit():
 def deposit_post():
     document = request.form['document']
     value = float(request.form['value'])
-    bankAccount = logic.deposit(document, value)    
-    return render_template('deposit.html', bankAccount=bankAccount)
+    try:
+        bankAccount = logic.deposit(document, value)    
+        return render_template('deposit.html', bankAccount=bankAccount)
+    except Exception as ex:
+        errorMessage = 'Erro interno.'
+        if str(ex) == 'BankAccount_NotFound':
+            errorMessage = 'Conta bancária não encontrada.'
+        if(str(ex) == 'Negative_Value'):
+            errorMessage = 'Valor do deposito precisa ser maior que zero.'                    
+        return render_template('deposit.html', error=errorMessage)
 
 @app.route('/bankstatement', methods=['GET'])
 def bankstatement():
