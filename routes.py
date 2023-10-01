@@ -8,10 +8,13 @@ logic = Logic()
 
 @app.route('/')
 @app.route('/index', methods=['GET'])
-
 def index():
     logic.init()
     return render_template('index.html')
+
+@app.route('/exit', methods=['GET'])
+def exit():
+    return render_template('exit.html')
 
 @app.route('/customer', methods=['GET'])
 def customer():
@@ -28,6 +31,8 @@ def customer_post():
         return render_template('customer.html', newCustomer=newCustomer)
     except Exception as ex:
         errorMessage = 'Erro interno.'
+        if(str(ex) == 'Invalid_Document'):
+            errorMessage = "CPF inválido."        
         if str(ex) == 'Duplicated_Document':
             errorMessage = 'Já existe um usuário com esta conta.'
         return render_template('customer.html', error=errorMessage)

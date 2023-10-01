@@ -31,7 +31,12 @@ class Logic():
         db.session.add_all(bankAccountTypes)
     
     def create_user(self, name, document, gender, birthday):
+        
+        if(len(document) < 11):
+            raise Exception("Invalid_Document")
+                
         customer = self.get_customer_by_document(document)
+        
         if(customer):
             raise Exception("Duplicated_Document")
         
